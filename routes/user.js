@@ -73,14 +73,12 @@ exports.dashboard = (req, res, next) => {
 	
 	if(userId == null)
 	{
-		res.redirect("/home/login");
+		res.redirect("/login");
 		return;
 	}
-
 	let sql = "SELECT * FROM `user` WHERE `id`='"+userId+"'";
 	db.query(sql, (err, results) => {
-		console.log(results); 
-
+        console.log(user);
 		res.render('profile.ejs', {user:user});	  	  
 	});	 
 };
