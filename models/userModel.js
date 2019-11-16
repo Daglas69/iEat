@@ -5,7 +5,6 @@ module.exports = class UserModel {
 	}
 
 	getUser(username, password, callback) {
-		console.log("in user");
 		let sql = "SELECT id, username FROM `users` WHERE `username`='"+username+"' and password = '"+password+"'";
       	db.query(sql, (err, results) => {      
         	if(results.length) callback(results);

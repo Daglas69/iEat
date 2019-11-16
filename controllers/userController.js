@@ -25,7 +25,6 @@ module.exports = class UserController {
 	         	{
 	            	req.session.userId = resDB[0].id;
 	            	req.session.user = resDB[0];
-	            	console.log(resDB[0].id);
 	           		res.redirect('/profile');
 	         	}
 	         	else
