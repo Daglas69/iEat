@@ -9,7 +9,7 @@ module.exports = class UserController {
 		//It would be much more simpler using functions instead of object
 		this.login = this.login.bind(this);
 		this.signup = this.signup.bind(this);
-		this.dashboard = this.dashboard.bind(this);
+		this.profile = this.profile.bind(this);
 	}
 
 	login(req, res) {
@@ -26,7 +26,7 @@ module.exports = class UserController {
 	            	req.session.userId = resDB[0].id;
 	            	req.session.user = resDB[0];
 	            	console.log(resDB[0].id);
-	           		res.redirect('/home/dashboard');
+	           		res.redirect('/profile');
 	         	}
 	         	else
 	         	{
@@ -108,7 +108,7 @@ module.exports = class UserController {
   	}
 
 
-	dashboard(req, res, next) {
+	profile(req, res, next) {
 
 		let user =  req.session.user;
 		let userId = req.session.userId;
