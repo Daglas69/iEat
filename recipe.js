@@ -1,5 +1,6 @@
 class Recipe {
-	constructor(ingredients, procedure, category, difficulty) {
+	constructor(name, ingredients, procedure, category, difficulty) {
+		this.name = name;
 		this.ingredients = ingredients;
 		this.procedure = procedure;
 		this.category = category;
@@ -19,4 +20,10 @@ class Procedure {
 		this.steps = steps;
 		this.tips = tips;
 	}
+}
+
+module.exports = {
+	Recipe,
+	Ingredient,
+	Procedure
 }

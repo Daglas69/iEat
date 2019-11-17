@@ -1,0 +1,140 @@
+<html lang="en">
+
+<style type="text/css">
+.vcenter {
+    display: flex;
+    align-items: center;
+}
+</style>
+
+<script>
+	//Not the best way to do it... But very efficient
+	function addIngredient() {
+	    let list = document.getElementById("ingredient-list");
+	   	let candidate = document.getElementById("candidate");
+
+	   	if (candidate.value.length == 0) return false;
+
+	   	let child = document.createElement('div');
+	   	child.setAttribute("class", "form-group vcenter");
+	   	child.setAttribute("id", "ingredient-"+candidate.value);
+
+	   	let nbIngredients = "";
+	   	for (let i=1; i<=20; ++i) nbIngredients+=`<option>${i}</option>`;
+
+	   	child.innerHTML = `
+	   		<input type"text" class="list-group-item col-md-6 col-sm-offset-4" name="ingredients"
+	   			value="${candidate.value}" readonly>
+	   		</input>
+	   		<div class="col-md-1">
+	   			<select class="form-control" name="nbIngredients">
+	   				${nbIngredients}
+	   			</select>
+	   		</div>
+	   		<a href="#" onclick="removeIngredient('${child.id}')">
+          		<span class="glyphicon glyphicon-remove"></span>
+        	</a>
+	   	`;
+
+	    list.appendChild(child);
+	}
+
+	function removeIngredient(ingredientID) {
+		let list = document.getElementById("ingredient-list");
+		list.removeChild(document.getElementById(ingredientID));
+	}
+</script>
+
+<%- include header %>
+
+<div class="jumbotron">
+	<h1>Add a new Recipe</h1>
+	<br/><br/>
+
+	<form class="form-horizontal" role="form" method="post" action="/submit-recipe">
+		    
+	 	<!-- Name of the recipe -->                               
+	    <div class="form-group">
+	    	<label for="recipe_name" class="col-md-3 control-label">Name</label>
+	       	<div class="col-md-9">
+	           	<input type="text" class="form-control" name="recipe_name" placeholder="Recipe Name">
+	        </div>
+	    </div>
+
+
+    	<!-- Category of the recipe -->
+	    <div class="form-group">
+	    	<label for="recipe_category" class="col-md-3 control-label">Category</label>
+	    	<div class="col-md-9">
+		    	<select class="form-control" name="recipe_category">
+	  				<option>Breakfast</option>
+	  				<option>Lunch</option>
+	  				<option>Dinner</option>
+				</select>
+			</div>
+	    </div>
+
+
+	    <!-- Difficulty of the recipe -->
+	    <div class="form-group">
+	    	<label for="recipe_difficulty" class="col-md-3 control-label">Difficulty</label>
+	    	<div class="col-md-9">
+		    	<select class="form-control" name="recipe_difficulty">
+	  				<option>easy</option>
+	  				<option>medium</option>
+	  				<option>hard</option>
+				</select>
+			</div>
+	    </div>
+
+
+	    <br/><br/>
+
+	   	<!-- Ingredients of the recipe -->
+	    <div class="form-group">
+	    	<label for="recipe_ingredient" class="col-md-3 control-label">Ingredients</label>
+			<div class="col-md-8">
+				<input type="text" id="candidate" class="form-control" name="recipe_ingredient" placeholder="Ingredient name">
+	        </div>
+	       	<div class="col-md-1">
+				<button type="button" onclick="addIngredient()" class="btn btn-primary font-weight-bold">Add</button>
+	        </div>    	
+	    </div>
+	    
+
+	    <div class="form-group" id="ingredient-list">
+	    	<!-- Where ingredients will be listed -->
+	    </div>
+		
+
+	    <br/><br/>
+
+    	
+	   	<!-- Procedure of the recipe -->
+	    <div class="form-group">
+	    	<label for="recipe_procedure" class="col-md-3 control-label">Procedure</label>
+	    	<div class="col-md-9">
+	    		<textarea name="recipe_procedure" class="md-textarea form-control" rows="10"></textarea>
+	    	</div>
+	    </div>
+
+
+	    <!-- Tips of the recipe -->
+	    <div class="form-group">
+	    	<label for="recipe_tips" class="col-md-3 control-label">Tips</label>
+	    	<div class="col-md-9">
+	    		<textarea name="recipe_tips" class="md-textarea form-control" rows="5"></textarea>
+	    	</div>
+	    </div>
+
+
+	    <br/><br/>
+	    <!-- Submit button -->
+		<button id="btn-signup" type="submit" class="btn btn-info col-sm-offset-10 col-md-2">
+	   		Submit
+		</button>
+
+	</form>
+</div>
+
+<%- include footer %>

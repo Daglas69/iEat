@@ -10,7 +10,9 @@ module.exports = class UserController {
 		this.login = this.login.bind(this);
 		this.signup = this.signup.bind(this);
 		this.profile = this.profile.bind(this);
+		this.logout = this.logout.bind(this);
 	}
+
 
 	login(req, res) {
 		let message = "";
@@ -107,23 +109,24 @@ module.exports = class UserController {
   	}
 
 
+  	//next is a reference to next function to execute (like a callback)
 	profile(req, res, next) {
 
-		let user =  req.session.user;
-		let userId = req.session.userId;
-	
-		if(userId == null)
-		{
-			res.redirect("/login");
-			return;
-		}
-		
-		this.model.getUserById(userId, (resDB) => {
+		this.model.getUserById(req.session.userId, (resDB) => {
 			if (resDB == true)
 			{
-	      	 	console.log(user);
-				res.render('profile.ejs', {user:user});	 
+	      	 	console.log(req.session.user);
+				res.render('profile.ejs', {user: req.session.user});	 
 			}
 		})
+	}
+
+
+	logout(req, res) {
+		//We remove the user stored in the session
+		req.session.user = null;
+		req.session.userId = null;
+
+		res.redirect('/login');
 	}
 }

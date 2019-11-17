@@ -14,18 +14,31 @@ var express = require('express');
 var router = express.Router();
 
 
-//get handler
-router.get('/', indexController.index);                   //call for index page
-router.get('/login', indexController.index);              //call for login page
-router.get('/logout', indexController.index);             //call for logout page
-router.get('/signup', userController.signup);             //call for signup page
-router.get('/profile', userController.profile);           //call for profile page
-router.get('/catalog', catalogController.show);           //call for catalog page
+//Function to check if the user is connected
+let validateUser = (req, res, next) => {
+	if (req.session.userId != null) next();
+	else res.redirect('/login');
+}
 
 
-//post handler
-router.post('/login', userController.login);    //call for login post
-router.post('/signup', userController.signup);  //call for signup post
+//Index route
+router.get('/', indexController.index);  
+
+//Routes for user requests
+router.get('/login', indexController.index);
+router.get('/logout', userController.logout);
+router.get('/signup', userController.signup);
+router.get('/profile', validateUser, userController.profile);
+router.post('/login', userController.login);
+router.post('/signup', userController.signup);
+
+
+//Routes for recipe requests
+router.get('/catalog', validateUser, catalogController.showCatalog);
+router.get('/recipe-form', catalogController.showRecipeForm); //ADD VALIDATE USER
+router.post('/submit-recipe', catalogController.submitRecipe); //ADD VALIDATE USER
+
+
 
 
 module.exports = router;
