@@ -1,7 +1,9 @@
+const UserModel = require('../models/userModel.js');
+
 module.exports = class UserController {
 
 	constructor (model) {
-		this.model = model;
+		this.model = new UserModel();
 		
 		//The router that use these methods doesnt know about anything about the class
 		//So it doesnt know which value to use as this. 
@@ -14,7 +16,9 @@ module.exports = class UserController {
 	}
 
 
-	login(req, res) {
+
+
+	async login(req, res) {
 		let message = "";
 		let session = req.session;
 
@@ -22,19 +26,18 @@ module.exports = class UserController {
 		{
 			let username = req.body.user_name;
       		let password = req.body.password;
-			this.model.getUser(username,password, (resDB) => {
-				if (resDB != null)
-	         	{
-	            	req.session.userId = resDB[0].id;
-	            	req.session.user = resDB[0];
-	           		res.redirect('/profile');
-	         	}
-	         	else
-	         	{
-	           		message = 'Wrong Credentials';
-	            	res.render('index.ejs',{message: message});
-	         	}
-			});
+			
+      		try {
+				let resDB = await this.model.getUser(username,password);
+		        req.session.userId = resDB[0].id;
+		        req.session.user = resDB[0];
+		        res.redirect('/profile');
+		    }
+
+	        catch (err) {
+	           	message = 'Wrong Credentials';
+	            res.render('index.ejs',{message: message});
+	        }
 		}
 
 		else 
@@ -44,7 +47,7 @@ module.exports = class UserController {
 	}
 
 
-	signup(req, res) {
+	async signup(req, res) {
 		let msg = { 
 			message: "",
 			success: null
@@ -73,34 +76,31 @@ module.exports = class UserController {
 	    		return;
 	    	}
 
-	    	this.model.containsUser(user.username, (resDB) => {
-		    	if (resDB == true)
-		    	{
-		    		msg.message = "This username already exists.";
-		    		msg.success = false;
-	          		res.render('signup.ejs',{msg: msg});
-	   			}
-	   			else 
-	   			{
-	   				this.model.insertUser(user, (resDB) => {
-		   				if (resDB == true)
-		   				{
-		              		msg.message = "Succesfully! Your account has been created.";
-		              		msg.success = true;
-		              		res.render('signup.ejs',{msg: msg});
-		   				}
-		   				else 
-		   				{
-		              		console.log("error ocurred",error);
-		              		res.send({
-		                  		"code":400,
-		                  		"failed":"error ocurred"
-		              		});
-		   				}
-	   				});
-	   			}
-	    	});
-  		}
+	    	
+	    	let resDB = await this.model.containsUser(user.username);
+		    if (resDB == true)
+		    {
+		    	msg.message = "This username already exists.";
+		    	msg.success = false;
+	          	res.render('signup.ejs',{msg: msg});
+	   		}
+	   		else
+	   		{
+	   			try {
+					await this.model.insertUser(user);
+		            msg.message = "Succesfully! Your account has been created.";
+			  		msg.success = true;
+		    		res.render('signup.ejs',{msg: msg});
+		   		}
+		   		catch (err) {
+		            console.log("error ocurred",err);
+		            res.send({
+		            	"code":400,
+		                "failed":"error ocurred"
+		            });
+		   		}
+	   		}
+	   	}
 
   		else 
   		{
@@ -110,15 +110,16 @@ module.exports = class UserController {
 
 
   	//next is a reference to next function to execute (like a callback)
-	profile(req, res, next) {
+	async profile(req, res, next) {
 
-		this.model.getUserById(req.session.userId, (resDB) => {
-			if (resDB == true)
-			{
-	      	 	console.log(req.session.user);
-				res.render('profile.ejs', {user: req.session.user});	 
-			}
-		})
+		try {
+			await this.model.getUserById(req.session.userId);
+			console.log(req.session.user);
+			res.render('profile.ejs', {user: req.session.user});
+		}
+		catch {
+			res.render('/login', {msg: "Unexpected error."});
+		}
 	}
 
 

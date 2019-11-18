@@ -1,35 +1,36 @@
 CREATE TABLE users (
 	id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, 
-	username VARCHAR(20) NOT NULL, 
+	username VARCHAR(20) UNIQUE NOT NULL, 
 	password VARCHAR(20) NOT NULL
-)
+);
+
+CREATE TABLE recipes (
+	id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+	name VARCHAR(50) NOT NULL,
+	category VARCHAR(25) NOT NULL,
+	difficulty VARCHAR(25) NOT NULL,
+	ownerId INT NOT NULL,
+	FOREIGN KEY (ownerId) REFERENCES users(id)
+);
 
 CREATE TABLE procedures (
 	id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, 
-	setps MEDIUMTEXT NOT NULL,
-	tips MEDIUMTEXT
-)
+	steps MEDIUMTEXT NOT NULL,
+	tips MEDIUMTEXT,
+	recipeId INT NOT NULL,
+	FOREIGN KEY (recipeId) REFERENCES recipes(id)
+);
 
 CREATE TABLE ingredients (
 	id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-	name VARCHAR(25) UNIQUE NOT NULL,
+	name VARCHAR(25) NOT NULL,
 	amount INT NOT NULL
-)
+);
 
 CREATE TABLE ingredientLists (
 	recipeId INT NOT NULL,
 	ingredientId INT NOT NULL,
 	FOREIGN KEY (recipeId) REFERENCES recipes(id),
 	FOREIGN KEY (ingredientId) REFERENCES ingredients(id)
-)
+);
 
-CREATE TABLE recipes (
-	id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-	name VARCHAR(50) UNIQUE NOT NULL,
-	category VARCHAR(25) NOT NULL,
-	difficulty VARCHAR(25) NOT NULL,
-	ownerId INT NOT NULL,
-	procedureId INT NOT NULL,
-	FOREIGN KEY (ownerId) REFERENCES users(id),
-	FOREIGN KEY (procedureId) REFERENCES procedures(id)
-)

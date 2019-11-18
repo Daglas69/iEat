@@ -1,0 +1,7 @@
+TO DO : 
+
+improve display 
+set models in controller and find a way for global db
+set servers and router as class
+user as class
+constant with table name

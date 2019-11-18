@@ -1,45 +1,57 @@
-//Modules that node.js will be using
-let express = require('express');
-let bodyParser = require("body-parser");
-let session = require('express-session');
-let http = require('http');
-let path = require('path');
-let mysql = require('mysql');
-let routes = require('./routes/router.js');
+const Database = require('./database/database.js');
+const Router = require('./routes/router.js');
 
-//initialize express
-let app = express();
+class Server {
 
-//initialize connection to DB
-let connection = mysql.createConnection({
-	host     : 'localhost',
-    user     : 'root',
-    password : 'L1@informatique',
-    database : 'ieat'
-});
-connection.connect();
-global.db = connection;
+	constructor() 
+	{
+		//Modules that node.js will be using
+		this.express = require('express');
+		this.bodyParser = require("body-parser");
+		this.session = require('express-session');
+		this.http = require('http');
+		this.path = require('path');
+		this.routes = require('./routes/router.js');
+
+		//Express is the app
+		this.app = this.express();
+
+		//Database
+		this.db = new Database();
+		this.db.createConnection();
+
+		//Router
+		this.routes = new Router(this.app);
+		this.routes.createRoutes();
+	}
+
+	setupServer()
+	{
+		this.app.set('port', 3000);
+		this.app.set('views', __dirname + '/views');
+		this.app.set('view engine', 'ejs');
+		this.app.use(this.bodyParser.urlencoded({ extended: false }));
+		this.app.use(this.bodyParser.json());
+		this.app.use(this.express.static(this.path.join(__dirname, 'public')));
+		this.app.use(this.session({
+			secret: 'keyboard cat',
+		  	resave: false,
+		  	saveUninitialized: true,
+		  	cookie: { maxAge: 60000 }
+		}));
+
+		this.app.use('/',this.routes.router);
+
+		//Port of the server
+		this.app.listen(3000);
+	}
+}
 
 
-// set up all environments
-app.set('port', 3000);
-app.set('views', __dirname + '/views');
-app.set('view engine', 'ejs');
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(session({
-  secret: 'keyboard cat',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { maxAge: 60000 }
-}))
 
-app.use('/',routes);
+/* INIT OF THE SERVER */
+let server = new Server();
+server.setupServer();
 
 
-//Port of the server
-app.listen(3000);
-
-
-module.exports = app;
+module.exports = server.app;
