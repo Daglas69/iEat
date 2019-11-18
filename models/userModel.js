@@ -1,10 +1,12 @@
+const DB = require('../database/database.js');
+
 module.exports = class UserModel {
 	
 	constructor() {}
 
 
-	getUser(username, password) {
-		let sql = "SELECT id, username FROM `users` WHERE `username`='"+username+"' and password = '"+password+"'";
+	getUser(user) {
+		let sql = `SELECT id, username FROM ${DB.userTable} WHERE username="${user.username}" and password="${user.password}"`;
 		return new Promise((resolve, reject) => {
 			db.query(sql, (err, result) => {
 				if (result.length) resolve(result);
@@ -15,7 +17,7 @@ module.exports = class UserModel {
 
 
 	containsUser(username) {
-		let sql = 'SELECT * FROM users WHERE username="'+username+'"';
+		let sql = `SELECT * FROM ${DB.userTable} WHERE username="${username}"`;
 		return new Promise((resolve, reject) => {
 			db.query(sql, (err, result) => {
 				if (result.length > 0) resolve(true);
@@ -27,7 +29,7 @@ module.exports = class UserModel {
 
 	insertUser(user) {
 		return new Promise((resolve, reject) => {
-			db.query('INSERT INTO users SET ?',user, (err, result) => {
+			db.query(`INSERT INTO ${DB.userTable} SET ?`,user, (err, result) => {
 	        	if (!err) resolve();
 	        	else reject(err);
 	       	});
@@ -37,7 +39,7 @@ module.exports = class UserModel {
 
 	getUserById(id)
 	{
-		let sql = "SELECT * FROM `users` WHERE `id`='"+id+"'";
+		let sql = `SELECT * FROM ${DB.userTable} WHERE id="${id}"`;
 		return new Promise((resolve, reject) => {
 			db.query(sql, (err, results) => {
 				if (results.length > 0) resolve();

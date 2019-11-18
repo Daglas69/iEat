@@ -1,4 +1,5 @@
 const UserModel = require('../models/userModel.js');
+const DB = require('../database/database.js');
 
 module.exports = class UserController {
 
@@ -17,18 +18,16 @@ module.exports = class UserController {
 
 
 
-
 	async login(req, res) {
 		let message = "";
 		let session = req.session;
 
 		if (req.method == "POST")
 		{
-			let username = req.body.user_name;
-      		let password = req.body.password;
-			
+			let user = new DB.User(req.body.user_name, req.body.password);
+
       		try {
-				let resDB = await this.model.getUser(username,password);
+				let resDB = await this.model.getUser(user);
 		        req.session.userId = resDB[0].id;
 		        req.session.user = resDB[0];
 		        res.redirect('/profile');
@@ -55,10 +54,7 @@ module.exports = class UserController {
 
 		if(req.method == "POST")
    		{
-	  		let user = {
-	        	"username": req.body.user_name,
-	        	"password": req.body.password
-	    	}
+	  		let user = new DB.User(req.body.user_name, req.body.password);
 
 	    	if (user.username.length < 5)
 	    	{

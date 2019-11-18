@@ -4,6 +4,15 @@
 
 <div class="jumbotron">
 	<h1>Catalog</h1>
+	
+	<% if (msg.success == true) { %>
+    	<div class="alert alert-success col-sm-12"><%= msg.message %></div>
+    <% } %>
+
+    <% if (msg.success == false) { %>
+    	<div class="alert alert-danger col-sm-12"><%= msg.message %></div>
+    <% } %>
+
 	<form class="form-horizontal" role="form" method="get" action="/recipe-form">
 		<button id="btn-signup" type="submit" class="btn btn-info">
 	   		Submit a recipe

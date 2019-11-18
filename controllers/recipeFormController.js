@@ -1,5 +1,5 @@
 const RecipeModel = require('../models/recipeModel.js');
-const Recipe = require('../database/recipe.js');
+const DB = require('../database/database.js');
 
 module.exports = class RecipeFormController {
 
@@ -12,7 +12,8 @@ module.exports = class RecipeFormController {
 
 
 	showRecipeForm(req, res) {
-		res.render("recipe-form", {msg: ""});
+		let msg = {message: "", success:null};
+		res.render("recipe-form", {msg: msg});
 	}
 
 
@@ -23,7 +24,7 @@ module.exports = class RecipeFormController {
 		if (req.method == "POST")
 		{
 			/* Insert recipe */
-			let recipe = new Recipe.Recipe(
+			let recipe = new DB.Recipe(
 				req.body.recipe_name,
 				req.body.recipe_category,
 				req.body.recipe_difficulty,
@@ -35,7 +36,7 @@ module.exports = class RecipeFormController {
 
 				try {
 					/* Insert the procedure */
-					let procedure = new Recipe.Procedure(req.body.recipe_procedure, req.body.recipe_tips, recipeID);
+					let procedure = new DB.Procedure(req.body.recipe_procedure, req.body.recipe_tips, recipeID);
 					let procedureID = await this.model.addProcedure(procedure);
 		
 					/* Insert ingredients and Ingredient list */
@@ -44,12 +45,12 @@ module.exports = class RecipeFormController {
 					for (let i=0; i<ingredients.length; ++i) 
 					{
 						try {
-							ing = new Recipe.Ingredient(ingredients[i], req.body.nbIngredients[i]);
+							ing = new DB.Ingredient(ingredients[i], req.body.nbIngredients[i]);
 							ingID = await this.model.addIngredient(ing);
 							
 							//Insert ingredient in ingredient list (=array of ingredients for a recipe i)
 							try {
-								ingList = new Recipe.IngredientList(recipeID, ingID);
+								ingList = new DB.IngredientList(recipeID, ingID);
 								await this.model.addIngredientList(ingList);
 							}
 							catch {
@@ -61,7 +62,8 @@ module.exports = class RecipeFormController {
 						} 
 					}
 
-					res.redirect('/catalog');
+					let msg = {message:"Your recipe has been added", success: true};
+					res.render('recipe-form.ejs', {msg: msg});
 				}
 				catch (err) {
 					res.render('recipe-form.ejs', {msg: "Error to insert the procedure in the database"});
@@ -71,45 +73,5 @@ module.exports = class RecipeFormController {
 				res.render('recipe-form.ejs', {msg: "Error to insert the recipe in the database"});
 			}
 		}
-	}
-
-
-
-
-	/* Static functions to add and remove ingredients from the recipe form */
-
-	//Not the best way to do it... But very efficient
-	static addIngredient() {
-	    let list = document.getElementById("ingredient-list");
-	   	let candidate = document.getElementById("candidate");
-
-	   	if (candidate.value.length == 0) return false;
-
-	   	let child = document.createElement('div');
-	   	child.setAttribute("class", "form-group vcenter");
-
-	   	let nbIngredients = "";
-	   	for (let i=1; i<=20; ++i) nbIngredients+=`<option>${i}</option>`;
-
-	   	child.innerHTML = `
-	   		<input type"text" class="list-group-item col-md-6 col-sm-offset-4" name="ingredients"
-	   			value="${candidate.value}" readonly>
-	   		</input>
-	   		<div class="col-md-1">
-	   			<select class="form-control" name="nbIngredients">
-	   				${nbIngredients}
-	   			</select>
-	   		</div>
-	   		<a href="#" onclick="removeIngredient('${child.id}')">
-          		<span class="glyphicon glyphicon-remove"></span>
-        	</a>
-	   	`;
-
-	    list.appendChild(child);
-	}
-
-	static removeIngredient(ingredientID) {
-		let list = document.getElementById("ingredient-list");
-		list.removeChild(document.getElementById(ingredientID));
 	}
 }

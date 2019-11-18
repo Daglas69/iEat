@@ -13,31 +13,71 @@
 
 <!-- Little function to check blanks -->
 <script type="text/javascript">
-	const recipeFormController = require('../controllers/recipeFormController.js')
+	//Not the best way to do it... But very efficient
+	function addIngredient() {
+	    let list = document.getElementById("ingredient-list");
+	   	let candidate = document.getElementById("candidate");
+
+	   	if (candidate.value.length == 0) {
+	   		candidate.style = "border-color:red";
+	   		return false;
+	   	}else candidate.style = "";
+
+	   	let child = document.createElement('div');
+	   	child.setAttribute("class", "form-group vcenter");
+
+	   	let nbIngredients = "";
+	   	for (let i=1; i<=20; ++i) nbIngredients+=`<option>${i}</option>`;
+
+	   	child.innerHTML = `
+	   		<input type"text" class="list-group-item col-md-6 col-sm-offset-4" name="ingredients"
+	   			value="${candidate.value}" readonly>
+	   		</input>
+	   		<div class="col-md-1">
+	   			<select class="form-control" name="nbIngredients">
+	   				${nbIngredients}
+	   			</select>
+	   		</div>
+	   		<a href="#" onclick="removeIngredient('${child.id}')">
+          		<span class="glyphicon glyphicon-remove"></span>
+        	</a>
+	   	`;
+
+	    list.appendChild(child);
+	}
+
+	function removeIngredient(ingredientID) {
+		let list = document.getElementById("ingredient-list");
+		list.removeChild(document.getElementById(ingredientID));
+	}
+
 	function checkblanks() {
 		let recipe_name = document.getElementById("recipe_name");
 		let recipe_procedure = document.getElementById("recipe_procedure");
 		let recipe_ingredients = document.getElementById("ingredient-list");
+		let candidate = document.getElementById("candidate");
 
 		let form_error = document.getElementById("form_error");
 		form_error.style.display = "block";
 
+		form_error.innerHTML = "";
 		if (recipe_name.value.length == 0) {
-			form_error.innerHTML = "The name of the recipe can not be empty";
-			scroll(0,0);
-			return false;
-		}
+			form_error.innerHTML += "The name of the recipe can not be empty<br/>";
+			recipe_name.style = "border-color:red";
+		}else recipe_name.style = "";
+
 		if (recipe_procedure.value.length == 0) {
-			form_error.innerHTML = "The procedure of the recipe can not be empty";
-			scroll(0,0);
-			return false;
-		}
+			form_error.innerHTML += "The procedure of the recipe can not be empty<br/>";
+			recipe_procedure.style = "border-color:red";
+		} else recipe_procedure.style = "";
+
 		if (recipe_ingredients.childElementCount == 0) {
-			form_error.innerHTML = "The recipe must have at least one ingredient";
-			scroll(0,0);
-			return false;
-		}
-		return true;
+			form_error.innerHTML += "The recipe must have at least one ingredient<br/>";
+			candidate.style = "border-color:red";
+		} else candidate.style = "";
+
+		scroll(0,0);
+		return (form_error.innerHTML == "") ? true : false;
 	}
 </script>
 
@@ -53,10 +93,12 @@
     </div>
 
     <!-- Error sent by controller (database error) -->
-   	<% if (msg.length > 0) { %>
-    	<div class="alert alert-danger col-md-offset-3">
-    		<%= msg %>
-    	</div>
+	<% if (msg.success == true) { %>
+    	<div class="alert alert-success col-md-9 col-md-offset-3"><%= msg.message %></div>
+    <% } %>
+
+    <% if (msg.success == false) { %>
+    	<div class="alert alert-danger col-md-9 col-md-offset-3"><%= msg.message %></div>
     <% } %>
 
 	
@@ -106,7 +148,7 @@
 				<input type="text" id="candidate" class="form-control" name="recipe_ingredient" placeholder="Ingredient name">
 	        </div>
 	       	<div class="col-md-1">
-				<button type="button" onclick="RecipeFormController.addIngredient()" class="btn btn-primary font-weight-bold">Add</button>
+				<button type="button" onclick="addIngredient()" class="btn add btn-primary font-weight-bold">Add</button>
 	        </div>    	
 	    </div>
 	    
@@ -138,8 +180,12 @@
 
 
 	    <br/><br/>
+
+	    <!-- Return button -->
+	    <a class="btn btn-info col-md-1" href="/catalog">Back</a>
+
 	    <!-- Submit button -->
-		<button id="btn-signup" type="submit" class="btn btn-info col-sm-offset-10 col-md-2">
+		<button id="btn-signup" type="submit" class="btn btn-info col-md-offset-9 col-md-2">
 	   		Submit
 		</button>
 

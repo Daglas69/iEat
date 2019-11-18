@@ -1,3 +1,5 @@
+const DB = require('../database/database.js');
+
 module.exports = class RecipeModel {
 	
 	constructor() {}
@@ -5,7 +7,7 @@ module.exports = class RecipeModel {
 
 	addProcedure(procedure) {
 		return new Promise((resolve, reject) => {
-			db.query("INSERT INTO procedures SET ?", procedure, (err, res) => {
+			db.query(`INSERT INTO ${DB.procedureTable} SET ?`, procedure, (err, res) => {
 				if (err) reject();				
 				else resolve(res.insertId);
 			});
@@ -14,7 +16,7 @@ module.exports = class RecipeModel {
 
 	addIngredient(ingredient) {
 		return new Promise((resolve, reject) => {
-			db.query("INSERT INTO ingredients SET ?", ingredient, (err, res) => {
+			db.query(`INSERT INTO ${DB.ingredientTable} SET ?`, ingredient, (err, res) => {
 				if (err) reject();
 				else resolve(res.insertId);
 			});	
@@ -23,7 +25,7 @@ module.exports = class RecipeModel {
 
 	addRecipe(recipe) {
 		return new Promise((resolve, reject) => {
-			db.query("INSERT INTO recipes SET ?", recipe, (err, res) => {
+			db.query(`INSERT INTO ${DB.recipeTable} SET ?`, recipe, (err, res) => {
 				if (err) reject();
 				else resolve(res.insertId);
 			});
@@ -32,7 +34,7 @@ module.exports = class RecipeModel {
 
 	addIngredientList(ingredientList) {
 		return new Promise((resolve, reject) => {
-			db.query("INSERT INTO ingredientLists SET ?", ingredientList, (err, res) => {
+			db.query(`INSERT INTO ${DB.ingredientListTable} SET ?`, ingredientList, (err, res) => {
 				if (err) reject();
 				else resolve(res.insertId);
 			});

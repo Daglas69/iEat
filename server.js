@@ -1,4 +1,4 @@
-const Database = require('./database/database.js');
+const DB = require('./database/database.js');
 const Router = require('./routes/router.js');
 
 class Server {
@@ -17,7 +17,7 @@ class Server {
 		this.app = this.express();
 
 		//Database
-		this.db = new Database();
+		this.db = new DB.Database();
 		this.db.createConnection();
 
 		//Router

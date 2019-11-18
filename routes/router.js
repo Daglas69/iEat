@@ -16,6 +16,7 @@ module.exports = class Router {
 		this.recipeFormController = new RecipeFormController();
 
 		this.router = express.Router();
+		this.validateUser = DB.Database.validateUser;
 	}
 
 	createRoutes()
@@ -27,17 +28,17 @@ module.exports = class Router {
 		this.router.get('/login', this.indexController.index);
 		this.router.get('/logout', this.userController.logout);
 		this.router.get('/signup', this.userController.signup);
-		this.router.get('/profile', DB.validateUser, this.userController.profile);
+		this.router.get('/profile', this.validateUser, this.userController.profile);
 		this.router.post('/login', this.userController.login);
 		this.router.post('/signup', this.userController.signup);
 
 
 		//Routes for catalog requests
-		this.router.get('/catalog', DB.validateUser, this.catalogController.showCatalog);
+		this.router.get('/catalog', this.validateUser, this.catalogController.showCatalog);
 
 
 		//Routes for recipe requests
-		this.router.get('/recipe-form', DB.validateUser, this.recipeFormController.showRecipeForm);
-		this.router.post('/submit-recipe', DB.validateUser, this.recipeFormController.submitRecipe);
+		this.router.get('/recipe-form', this.validateUser, this.recipeFormController.showRecipeForm);
+		this.router.post('/submit-recipe', this.validateUser, this.recipeFormController.submitRecipe);
 	}
 }

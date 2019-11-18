@@ -6,6 +6,7 @@ module.exports = class CatalogController {
 
 
 	showCatalog(req, res) {
-		res.render("catalog.ejs");
+		let msg = {message: "", success: null}
+		res.render("catalog.ejs", {msg: msg});
 	}
 }
