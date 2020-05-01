@@ -1,6 +1,7 @@
 module.exports = class CatalogController {
 
 	constructor() {
+		THIS.MODEL = NEW MODEL
 		this.showCatalog = this.showCatalog.bind(this);
 	}
 
